@@ -1,0 +1,84 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User account profile and loyalty status",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Auth UID of the user", "maxLength": 128 },
+        "name": { "type": "string", "description": "Full name of the member", "maxLength": 100 },
+        "email": { "type": "string", "description": "Email address of the user", "maxLength": 200 },
+        "memberTier": { "type": "string", "description": "VIP loyalty tier", "enum": ["Bronze", "Silver", "Gold", "VIP Elite"] },
+        "memberPoints": { "type": "number", "description": "Loyalty points accumulated" },
+        "preferredStyle": { "type": "string", "description": "Fashion style profile", "enum": ["Streetwear", "Techwear", "Sneakerhead", "Minimalist", "Avant-Garde"] },
+        "phone": { "type": "string", "description": "Phone number", "maxLength": 50 },
+        "createdAt": { "type": "string", "description": "Creation timestamp" },
+        "updatedAt": { "type": "string", "description": "Last updated timestamp" }
+      },
+      "required": ["userId", "name", "email", "memberTier", "memberPoints"]
+    },
+    "ShippingAddress": {
+      "title": "ShippingAddress",
+      "description": "Saved shipping address for user",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "name": { "type": "string", "maxLength": 100 },
+        "street": { "type": "string", "maxLength": 200 },
+        "city": { "type": "string", "maxLength": 100 },
+        "state": { "type": "string", "maxLength": 100 },
+        "zip": { "type": "string", "maxLength": 50 },
+        "country": { "type": "string", "maxLength": 100 },
+        "isDefault": { "type": "boolean" }
+      },
+      "required": ["id", "userId", "name", "street", "city", "country"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Customer purchase order",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 128 },
+        "userId": { "type": "string", "maxLength": 128 },
+        "totalAmount": { "type": "number" },
+        "status": { "type": "string", "enum": ["Processing", "Shipped", "Out for Delivery", "Delivered"] },
+        "trackingNumber": { "type": "string", "maxLength": 128 },
+        "date": { "type": "string", "maxLength": 100 },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "userId", "totalAmount", "status", "trackingNumber"]
+    },
+    "BrandSetting": {
+      "title": "BrandSetting",
+      "description": "Global custom website brand name and identity",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "maxLength": 100 },
+        "tagline": { "type": "string", "maxLength": 200 },
+        "monogram": { "type": "string", "maxLength": 10 },
+        "accentTheme": { "type": "string", "enum": ["amber", "cyan", "rose", "emerald", "violet"] },
+        "updatedAt": { "type": "string" }
+      },
+      "required": ["name", "tagline", "monogram"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profile documents keyed by Auth UID"
+    },
+    "/users/{userId}/addresses/{addressId}": {
+      "schema": "ShippingAddress",
+      "description": "Sub-collection of user saved addresses"
+    },
+    "/orders/{orderId}": {
+      "schema": "Order",
+      "description": "Order records for drop purchases"
+    },
+    "/brand_settings/{settingId}": {
+      "schema": "BrandSetting",
+      "description": "Brand identity settings for the store"
+    }
+  }
+}

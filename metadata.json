@@ -1,0 +1,8 @@
+{
+  "name": "UrbanStep Fashion",
+  "description": "UrbanStep Fashion: Contemporary urban streetwear, sneaker releases, user authentication, customer accounts, and immersive runway experience.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

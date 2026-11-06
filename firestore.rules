@@ -1,0 +1,62 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default Deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // Test connection endpoint
+    match /test/connection {
+      allow read: if true;
+    }
+
+    // User profiles: Isolated and only readable/writable by owner
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow create: if isOwner(userId) && incoming().userId == userId;
+      allow update: if isOwner(userId) && incoming().userId == existing().userId;
+      allow delete: if false;
+
+      // Sub-collection of addresses
+      match /addresses/{addressId} {
+        allow read, write: if isOwner(userId) && isValidId(addressId);
+      }
+    }
+
+    // Orders: readable only by order owner
+    match /orders/{orderId} {
+      allow get: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn() && incoming().userId == request.auth.uid;
+      allow update, delete: if false;
+    }
+
+    // Brand settings: public read, owner-only write
+    match /brand_settings/{settingId} {
+      allow read: if isValidId(settingId);
+      allow write: if isSignedIn() && request.auth.token.email == "asadkhaan76762@gmail.com" && request.auth.token.email_verified == true && isValidId(settingId);
+    }
+  }
+}
